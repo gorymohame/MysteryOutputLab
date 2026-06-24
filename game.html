@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mystery Output Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { background: #4c97ff; font-family: 'Arial', sans-serif; text-align: center; color: white; transition: background 0.3s; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 800px; margin: 20px auto; }
+        .box { background: #ffab19; border-radius: 15px; padding: 10px; cursor: pointer; border-bottom: 8px solid #d97800; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 30px; transition: 0.2s; }
+        .box img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        button { padding: 15px 30px; margin: 10px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 18px; }
+        .btn-check { background: #9966ff; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1 id="status-text">Mystery Output Lab</h1>
+    <div class="grid" id="game-grid"></div>
+    <div id="controls" style="display:none;">
+        <button class="btn-check" onclick="check('Visual')">It's VISUAL</button>
+        <button class="btn-check" onclick="check('Sound')">It's SOUND</button>
+        <button class="btn-check" onclick="check('Both')">It's BOTH</button>
+    </div>
+
+    <script>
+        const data = [
+            { type: 'Visual', content: '<img src="greenflag.svg.png">' },
+            { type: 'Visual', content: '<img src="waving hands.jpg">' },
+            { type: 'Sound', content: '🎵', audio: 'musicc.m4a' },
+            { type: 'Sound', content: '🔔', audio: 'bell.mp3' },
+            { type: 'Both', content: '<img src="stop.jpg">', audio: 'stopsound.mp3' },
+            { type: 'Both', content: '<img src="cat.jpg">', audio: 'cat sound.mp3' }
+        ];
+
+        let currentActiveItem = null;
+
+        function createGrid() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = ''; 
+            for(let i=0; i<12; i++) {
+                let div = document.createElement('div');
+                div.className = 'box';
+                div.innerHTML = '🎁';
+                div.onclick = (e) => openBox(e.target, data[Math.floor(Math.random() * data.length)]);
+                grid.appendChild(div);
+            }
+        }
+
+        function openBox(element, item) {
+            document.body.style.background = "#4c97ff"; 
+            document.getElementById('status-text').innerText = "What type of Output is this?";
+            currentActiveItem = item;
+            
+            // تحديث محتوى الصندوق فقط
+            element.innerHTML = item.content;
+            element.style.background = "#fff";
+            document.getElementById('controls').style.display = "block";
+            
+            if (item.audio) {
+                new Audio(item.audio).play();
+            }
+        }
+
+        function check(choice) {
+            if (currentActiveItem && choice === currentActiveItem.type) {
+                document.body.style.background = "#2ecc71"; 
+                document.getElementById('status-text').innerText = "🌟 CORRECT! WELL DONE! 🌟";
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+                document.getElementById('controls').style.display = "none"; // إخفاء الأزرار بعد الفوز
+            } else {
+                document.body.style.background = "#e74c3c";
+                document.getElementById('status-text').innerText = "❌ WRONG! Try again!";
+            }
+        }
+        createGrid();
+    </script>
+</body>
+</html>
